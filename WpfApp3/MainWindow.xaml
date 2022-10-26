@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApp3"
         xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d" Language="pt-BR"
-        Title="Consulta Cadastro Sintegra SC" Height="700" Width="950">
+        Title="Consulta Cadastro Sintegra SC" Height="713.5" Width="950">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -19,11 +19,11 @@
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0,1">
             <wpf:ChromiumWebBrowser x:Name="Browser" Language="pt-BR" 
                                     Address="https://sat.sef.sc.gov.br/tax.NET/tax.net.cadastro/conssc_sitcad.aspx" 
-                                    TitleChanged="Browser_TitleChanged"
+                                    TitleChanged="Browser_TitleChanged" FrameLoadEnd="Browser_FrameLoadEnd"
                                     />
         </Border>
 
-        <Button Content="&#xe10b; _Mostrar HTML do resultado da consulta" x:Name="btnMostrar" Click="btnMostrar_Click" FontFamily="Segoe UI Symbol" VerticalAlignment="Top" Height="35" Grid.Row="2"/>
+        <Button Content="&#xe10b; _Mostrar HTML do resultado da consulta" x:Name="btnMostrar" Click="btnMostrar_Click" FontFamily="Segoe UI Symbol" VerticalAlignment="Top" Height="40" Grid.Row="2"/>
 
         <TextBlock Name="HtmlSource" Visibility="Hidden" Text="{Binding HtmlSourceNavegador, Mode=TwoWay}"/>
     </Grid>

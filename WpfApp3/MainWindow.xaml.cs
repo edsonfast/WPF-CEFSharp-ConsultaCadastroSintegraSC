@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CefSharp;
+using CefSharp.Wpf;
 
 namespace WpfApp3 {
     /// <summary>
@@ -20,26 +22,36 @@ namespace WpfApp3 {
     public partial class MainWindow : Window {
         public MainWindow() {
             InitializeComponent();
+
+            // Block Pop-Up
+            LifespanHandler life = new LifespanHandler();
+
+            Browser.LifeSpanHandler = life;
+            //life.popup_request += life_popup_request;
         }
 
-        private async void Browser_TitleChanged(object sender, DependencyPropertyChangedEventArgs e) {
-
+        private void Browser_TitleChanged(object sender, DependencyPropertyChangedEventArgs e) {
             var chwb = sender as CefSharp.Wpf.ChromiumWebBrowser;
 
             lblTitulo.Content = chwb.Title;
-            HtmlSource.Text = await chwb.BrowserCore.MainFrame.GetSourceAsync(); //chwb.GetBrowser().MainFrame.Url ;
-
-            // Carrega o resultado da pesquisa na mesma janela (Sintegra 2022)
-            if (HtmlSource.Text.Contains("result_sitcad.aspx?dat=") && !Browser.Address.Contains("https://sat.sef.sc.gov.br/tax.NET/tax.net.cadastro/result_sitcad.aspx")) {
-                int _idx = HtmlSource.Text.IndexOf("result_sitcad.aspx?dat=");
-                string _dat = HtmlSource.Text.Substring(_idx + 23, 6);
-                string _urlResult = "https://sat.sef.sc.gov.br/tax.NET/tax.net.cadastro/result_sitcad.aspx?dat=" + _dat;
-                Browser.LoadUrl(_urlResult);
-            }
         }
 
-        private void btnMostrar_Click(object sender, RoutedEventArgs e) {
-            MessageBox.Show(HtmlSource.Text);
+        private async void btnMostrar_Click(object sender, RoutedEventArgs e) {
+            MessageBox.Show(await Browser.GetSourceAsync());
+        }
+
+        private async void Browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e) {
+            var strSource = await e.Browser.MainFrame.GetSourceAsync();
+
+            // 'result_err.aspx?dat=031042' quando sem IE
+            if (strSource.Contains("result_sitcad.aspx?dat=") && !strSource.Contains("Modelo aprovado pela Portaria SEF nº 375, de 26/08/2003.")) {
+                int _idx = strSource.IndexOf("result_sitcad.aspx?dat=");
+                string _dat = strSource.Substring(_idx + 23, 6);
+                string _urlResult = "https://sat.sef.sc.gov.br/tax.NET/tax.net.cadastro/result_sitcad.aspx?dat=" + _dat;
+                Browser.LoadUrl(_urlResult);
+
+            }
+
         }
     }
 }
